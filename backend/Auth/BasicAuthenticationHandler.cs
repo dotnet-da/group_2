@@ -62,13 +62,14 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
         Login login = new Login(d);
         d.Connection.Open();  //Needed to do this explicitly
         var passwordFromDatabase = login.GetPassword(authUsername).Result;  //await entfernt
+        var userRole = login.GetUserType(authUsername).Result;
         d.Connection.Close();
         AuthenticatedUser authenticatedUser;
         ClaimsPrincipal claimsPrincipal;
 
         if (passwordFromDatabase != null && BCrypt.Net.BCrypt.Verify(authPassword, passwordFromDatabase)) //Inverted condition for checking for correct and not for false
         {
-            authenticatedUser = new AuthenticatedUser("BasicAuthentication", true, authUsername);
+            authenticatedUser = new AuthenticatedUser("BasicAuthentication", true, authUsername, userRole);
             claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(authenticatedUser));
 
             return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, Scheme.Name)));
@@ -81,7 +82,7 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
             }
             else
             {
-                authenticatedUser = new AuthenticatedUser("BasicAuthentication", true, "admin");
+                authenticatedUser = new AuthenticatedUser("BasicAuthentication", true, "admin", "Administrator");
                 claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(authenticatedUser));
             }
         }

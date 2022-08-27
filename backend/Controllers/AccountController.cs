@@ -7,6 +7,7 @@ using backend;
 namespace backend.Controllers
 {
     [Route("api/[controller]")]
+    [BasicAuthorization]
     public class AccountController : ControllerBase
     {
         public AccountController(Database db)
@@ -52,6 +53,11 @@ namespace backend.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutOne(int id, [FromBody] Account body)
         {
+            string roleAttemptingAccess = RoleGetter.GetRoleFromClaimsPrincipal(this.User).Result;
+            if (!roleAttemptingAccess.Equals("admin"))
+            {
+                return StatusCode(403);
+            }
             await Db.Connection.OpenAsync();
             var query = new Account(Db);
             body.ac_password = BCrypt.Net.BCrypt.HashPassword(body.ac_password);
@@ -69,6 +75,11 @@ namespace backend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOne(int id)
         {
+            string roleAttemptingAccess = RoleGetter.GetRoleFromClaimsPrincipal(this.User).Result;
+            if (!roleAttemptingAccess.Equals("admin"))
+            {
+                return StatusCode(403);
+            }
             await Db.Connection.OpenAsync();
             var query = new Account(Db);
             var result = await query.FindOneAsync(id);

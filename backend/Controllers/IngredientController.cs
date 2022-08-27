@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace backend.Controllers
 {
     [Route("api/[controller]")]
+    [BasicAuthorization]
     public class IngredientController : ControllerBase
     {
         public IngredientController(Database db)
@@ -16,6 +17,7 @@ namespace backend.Controllers
         public async Task<IActionResult> GetAll()
         {
             Console.WriteLine("test1");
+           
             await Db.Connection.OpenAsync();
             var query = new Ingredient(Db);
             var result = await query.GetAllAsync();
@@ -26,6 +28,7 @@ namespace backend.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOne(int id)
         {
+            
             await Db.Connection.OpenAsync();
             var query = new Ingredient(Db);
             var result = await query.FindOneAsync(id);
@@ -38,6 +41,11 @@ namespace backend.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Ingredient body)
         {
+            string roleAttemptingAccess = RoleGetter.GetRoleFromClaimsPrincipal(this.User).Result;
+            if (!roleAttemptingAccess.Equals("backer"))
+            {
+                return StatusCode(403);
+            }
             await Db.Connection.OpenAsync();
             body.Db = Db;
             int result = await body.InsertAsync();
@@ -49,6 +57,11 @@ namespace backend.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutOne(int id, [FromBody] Ingredient body)
         {
+            string roleAttemptingAccess = RoleGetter.GetRoleFromClaimsPrincipal(this.User).Result;
+            if (!roleAttemptingAccess.Equals("backer"))
+            {
+                return StatusCode(403);
+            }
             await Db.Connection.OpenAsync();
             var query = new Ingredient(Db);
             var result = await query.FindOneAsync(id);
@@ -64,6 +77,11 @@ namespace backend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOne(int id)
         {
+            string roleAttemptingAccess = RoleGetter.GetRoleFromClaimsPrincipal(this.User).Result;
+            if (!roleAttemptingAccess.Equals("backer"))
+            {
+                return StatusCode(403);
+            }
             await Db.Connection.OpenAsync();
             var query = new Ingredient(Db);
             var result = await query.FindOneAsync(id);

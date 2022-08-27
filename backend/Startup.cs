@@ -32,6 +32,8 @@ namespace backend
             });
            
             ConnectionStringStorer.Instance.ConnectionString = "User Id=dotnet_group2user;Password=joYaNTEROPKiNs;Server=141.100.70.93;Port=5432;Database=stjucloo;";
+
+            
             Console.WriteLine("initted");
         }
 

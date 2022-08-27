@@ -46,7 +46,7 @@ namespace backend
         public async Task<string> GetUserType(string username)
         {
             using var cmd = Db.Connection.CreateCommand();
-            cmd.CommandText = @"SELECT ac_type  FROM stjucloo.accounts WHERE ac_username = @ac_username";
+                cmd.CommandText = @"SELECT ac_type  FROM stjucloo.accounts WHERE ac_username = @ac_username";
             cmd.Parameters.Add(new NpgsqlParameter
             {
                 ParameterName = "@ac_username",
@@ -54,6 +54,7 @@ namespace backend
                 Value = username,
             });
             Console.WriteLine($"Login::GetUserType SQL: {cmd.CommandText}");
+            
             var result = await ReadPassword(await cmd.ExecuteReaderAsync()); // Funktioniert, weil nur 1 Wert geladen wird (wie in GetPassword)
             //return lengt(result) > 0 ? result : null;
             return result;

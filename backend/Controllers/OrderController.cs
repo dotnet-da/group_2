@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace backend.Controllers
 {
     [Route("api/[controller]")]
+    [BasicAuthorization]
     public class OrderController : ControllerBase
     {
         public OrderController(Database db)
@@ -38,6 +39,11 @@ namespace backend.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Order body)
         {
+            string roleAttemptingAccess = RoleGetter.GetRoleFromClaimsPrincipal(this.User).Result;
+            if (!roleAttemptingAccess.Equals("client"))
+            {
+                return StatusCode(403);
+            }
             await Db.Connection.OpenAsync();
             body.Db = Db;
             int result = await body.InsertAsync();

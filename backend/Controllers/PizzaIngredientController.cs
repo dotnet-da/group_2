@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace backend.Controllers
 {
     [Route("api/[controller]")]
+    [BasicAuthorization]
     public class PizzaIngredientController : ControllerBase
     {
         public PizzaIngredientController(Database db)
@@ -27,6 +28,11 @@ namespace backend.Controllers
         [HttpPost]
         public async Task<IActionResult> AddIngredientToPizza([FromBody] PizzaIngredientModel body)
         {
+            string roleAttemptingAccess = RoleGetter.GetRoleFromClaimsPrincipal(this.User).Result;
+            if (!roleAttemptingAccess.Equals("admin"))
+            {
+                return StatusCode(403);
+            }
             await Db.Connection.OpenAsync();
             var query = new PizzaIngredientModel(Db);
             query.z_id = body.z_id;
@@ -53,6 +59,11 @@ namespace backend.Controllers
         [HttpDelete("{z_id}/{p_id}")]
         public async Task<IActionResult> RemoveIngredientFromPizza(int z_id, int p_id)
         {
+            string roleAttemptingAccess = RoleGetter.GetRoleFromClaimsPrincipal(this.User).Result;
+            if (!roleAttemptingAccess.Equals("admin"))
+            {
+                return StatusCode(403);
+            }
             await Db.Connection.OpenAsync();
             var query = new PizzaIngredientModel(Db);
             query.z_id = z_id;
