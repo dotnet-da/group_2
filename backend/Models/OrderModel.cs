@@ -88,18 +88,26 @@ namespace backend
             return all_ints;
         }
 
+        private async Task<int> ReadOneAsyncInt(DbDataReader reader)
+        {
+            using (reader)
+            {
+                return reader.GetInt32(0);
+            }
+        }
+
 
 
         public async Task<int> InsertAsync()
         {
             using var cmd = Db.Connection.CreateCommand();
-            cmd.CommandText = @"INSERT INTO stjucloo.bestellungen (backer_ac_id, ac_id, p_id,be_ready, be_backerid,be_pizzaid) VALUES (@backer_ac_id, @ac_id, @p_id, @be_ready, -1, -1);"; //\todo prüfen
+            cmd.CommandText = @"INSERT INTO stjucloo.bestellungen (backer_ac_id, ac_id, p_id,be_ready, be_backerid,be_pizzaid) VALUES (@backer_ac_id, @ac_id, @p_id, @be_ready, -1, -1) RETURNING be_id;"; //\todo prüfen
             BindParams(cmd);
             Console.WriteLine($"Order::InsertAsync SQL: {cmd.CommandText}");
-            await cmd.ExecuteNonQueryAsync();
             //int id_pizza = (int) cmd.LastInsertedId; // \todo Herausfinden, wie man letzte ID bei npgsql bekommt.
             //return id_pizza;
-            return 0;
+            var id = cmd.ExecuteScalarAsync().Result;
+            return (int)id;
         }
 
         public async Task UpdateAsync()

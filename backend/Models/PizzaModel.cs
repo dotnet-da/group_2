@@ -121,13 +121,13 @@ namespace backend
         public async Task<int> InsertAsync()
         {
             using var cmd = Db.Connection.CreateCommand();
-            cmd.CommandText = @"INSERT INTO stjucloo.pizza (p_name) VALUES (@p_name);";
+            cmd.CommandText = @"INSERT INTO stjucloo.pizza (p_name) VALUES (@p_name) RETURNING p_id;";
             BindParams(cmd);
-            await cmd.ExecuteNonQueryAsync();
             //int id_pizza = (int) cmd.LastInsertedId; // \todo Herausfinden, wie man letzte ID bei npgsql bekommt.
             //return id_pizza;
             Console.WriteLine($"Pizza::InsertAsync SQL: {cmd.CommandText}");
-            return 0;
+            var id = cmd.ExecuteScalarAsync().Result;
+            return (int)id;
         }
 
         public async Task UpdateAsync()
