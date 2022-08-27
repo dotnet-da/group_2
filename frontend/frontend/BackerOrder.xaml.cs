@@ -28,7 +28,10 @@ namespace frontend
         String name;
         List<Bestellung> gridData;
         Bestellung currentBestellungInOven;
+        bool pizzaInTheOven = false;
+
         Bestellung currentBestellungSending;
+        bool pizzaDriverDriving = false;
         public BackerOrder(String name)
         {
             this.name = name;
@@ -39,6 +42,11 @@ namespace frontend
         private void buttonConfirm_Click(object sender, RoutedEventArgs e)
         {
             Bestellung bestellung = (Bestellung) dataGrid.SelectedItem;
+            if (bestellung == null)
+            {
+                MessageBox.Show("You need to select an Order first");
+                return;
+            }
             updateBestellung(bestellung, "Order accepted");
         }
 
@@ -103,9 +111,20 @@ namespace frontend
 
         private async void buttonMake_Click(object sender, RoutedEventArgs e)
         {
+            if (pizzaInTheOven)
+            {
+                MessageBox.Show("There is already a Pizza in the Oven");
+                return;
+            }
             currentBestellungInOven = (Bestellung)dataGrid.SelectedItem;
+            if(currentBestellungInOven == null)
+            {
+                MessageBox.Show("You need to select an Order first");
+                return;
+            }
             if(currentBestellungInOven.status == "Order accepted")
             {
+                pizzaInTheOven = true;
                 BackgroundWorker worker = new BackgroundWorker();
                 worker.WorkerReportsProgress = true;
                 worker.DoWork += worker_MakePizza;
@@ -148,19 +167,32 @@ namespace frontend
         {
             updateBestellung(currentBestellungInOven, "Pizza made");
             currentBestellungInOven = null;
+            pizzaInTheOven = false;
         }
 
         private void pizzaDelivered(object sender, RunWorkerCompletedEventArgs e)
         {
             updateBestellung(currentBestellungSending, "Pizza delivered");
             currentBestellungSending = null;
+            pizzaDriverDriving = false;
         }
 
         private void buttonSend_Click(object sender, RoutedEventArgs e)
         {
-            currentBestellungSending = (Bestellung)dataGrid.SelectedItem;
-            if(currentBestellungSending.status == "Pizza made")
+            if (pizzaDriverDriving)
             {
+                MessageBox.Show("The Pizza driver is already driving");
+                return;
+            }
+            currentBestellungSending = (Bestellung)dataGrid.SelectedItem;
+            if (currentBestellungSending == null)
+            {
+                MessageBox.Show("You need to select an Order first");
+                return;
+            }
+            if (currentBestellungSending.status == "Pizza made")
+            {
+                pizzaDriverDriving = true;
                 BackgroundWorker worker = new BackgroundWorker();
                 worker.WorkerReportsProgress = true;
                 worker.DoWork += worker_DeliverPizza;

@@ -21,6 +21,8 @@ namespace frontend
     public partial class IngredientsWindow : Window
     {
         String name;
+        int runs = 0;
+        List<Zutat> zutatenList;
         public IngredientsWindow(String name)
         {
             this.name = name;
@@ -30,16 +32,23 @@ namespace frontend
 
         private async void updateGrid() {
             dataGrid.ItemsSource = null;
-            List <String> dataList = new List<string>();
-            dataList.Add("Salami");
-            dataList.Add("Dough");
-
-            List<Zutat> zutatenList = getZutatenFromApi();
+            if(runs == 0)
+            {
+                zutatenList = getZutatenFromApi();
+                runs++;
+            }            
 
             dataGrid.ItemsSource = zutatenList;
         }
 
         private List<Zutat> getZutatenFromApi() { 
+            //TODO Create API call to get all the Zutaten 
+                return createMockData();
+            
+            
+        }
+        private List<Zutat> createMockData()
+        {
             List<Zutat> zutatList = new List<Zutat>();
             Zutat zutat = new Zutat();
             zutat.zutatID = 0;
@@ -64,10 +73,18 @@ namespace frontend
         }
         private async void button_Click(object sender, RoutedEventArgs e)
         {
+            if(textBoxAmount.Text == "")
+            {
+                MessageBox.Show("You need to give a value");
+                return;
+            }
             Zutat zutat = (Zutat) dataGrid.SelectedItem;
+            if(zutat == null) {
+                MessageBox.Show("You need to select an ingredient first");
+                return; }
             int updatedAmount = zutat.amount + int.Parse(textBoxAmount.Text);
 
-            if (updateZutat(updatedAmount, zutat.zutatID))
+            if (updateZutat(zutat, updatedAmount))
             {
                 labelConfirm.Content = "Succesfully bought " + zutat.zutatName;
                 labelConfirm.Visibility = Visibility.Visible;
@@ -81,10 +98,23 @@ namespace frontend
             
         }
 
-        private bool updateZutat(int updatedAmount, int id) {
+        private bool updateZutat(Zutat zutat, int amount) {
             //TODO call to API, update the Zutat
-
+            mockUpdate(zutat, amount);
             return true;
+        }
+
+        private void mockUpdate(Zutat zutat, int amount)
+        {
+            foreach (Zutat tmpZutat in zutatenList)
+            {
+                if (zutat.zutatID == tmpZutat.zutatID)
+                {
+                    tmpZutat.amount = amount;
+                    updateGrid();
+                    return;
+                }
+            }
         }
 
         private void button1_Click(object sender, RoutedEventArgs e)
