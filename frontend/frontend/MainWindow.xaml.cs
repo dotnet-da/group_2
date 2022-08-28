@@ -34,7 +34,7 @@ namespace frontend
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
              
-            char user = checkLoginFromAPI();
+            char user = await checkLoginFromAPI();
 
             switch (user)
             {
@@ -106,9 +106,9 @@ namespace frontend
             }
         }
 
-        private char checkLoginFromAPI()
+        private async Task<char> checkLoginFromAPI()
         {
-            var result_from_api = LoginHttp(tboxUserName.Text, tboxPassword.Password).Result;
+            var result_from_api = await LoginHttp(tboxUserName.Text, tboxPassword.Password);
             if (result_from_api.Equals("backer"))
                 return 'b';
             else if (result_from_api.Equals("customer"))
@@ -131,8 +131,8 @@ namespace frontend
             var url = $"{EnviromentPizza.baseUrl}login";
             var client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authData));
-            //HttpResponseMessage result = await client.PostAsync(url, postData);
-            HttpResponseMessage result = client.PostAsync(url, postData).Result;
+            HttpResponseMessage result = await client.PostAsync(url, postData);
+            //HttpResponseMessage result = client.PostAsync(url, postData).Result;
             
             response = await result.Content.ReadAsStringAsync();
             return response;
