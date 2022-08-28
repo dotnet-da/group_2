@@ -9,7 +9,7 @@ namespace frontend
     public class Account
     {
         public string ac_username { get; set; }
-        public string ac_password { get; set; }
+        public string ac_password { get; set; } 
 
         public Account(string u, string p)
         {

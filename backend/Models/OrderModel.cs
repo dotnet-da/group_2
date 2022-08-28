@@ -12,6 +12,9 @@ namespace backend
         public int be_id { get; set; } //Order ID
         public int ac_id { get; set; } //Account ID of the one who ordered it
 
+        public string p_name { get; set; }
+        public string p_status { get; set; }
+
         public int p_id { get; set; }
 
         public int be_backerid { get; set; } = -1; //\todo redundant? (backer_ac_id ist schon da?)
@@ -32,7 +35,10 @@ namespace backend
         public async Task<Order> FindOneAsync(int id_order)
         {
             using var cmd = Db.Connection.CreateCommand();
-            cmd.CommandText = @"SELECT * FROM stjucloo.bestellungen WHERE be_id = @be_id;";
+            cmd.CommandText = @"SELECT backer_ac_id, ac_id, be_status, p.p_name
+                                FROM stjucloo.bestellungen
+                                join stjucloo.pizza p on bestellungen.p_id = p.p_id 
+                                WHERE be_id = @be_id;";
             cmd.Parameters.Add(new NpgsqlParameter
             {
                 ParameterName = "@be_id",
@@ -40,14 +46,16 @@ namespace backend
                 Value = id_order,
             });
             Console.WriteLine($"Order::FindOneAsync SQL: {cmd.CommandText}");
-            var result = await ReadAllAsync(await cmd.ExecuteReaderAsync());
+            var result = await ReadOneAsync(await cmd.ExecuteReaderAsync());
             return result.Count > 0 ? result[0] : null;
         }
 
         public async Task<List<Order>> GetAllAsync()
         {
             using var cmd = Db.Connection.CreateCommand();
-            cmd.CommandText = @"SELECT * FROM stjucloo.bestellungen;";
+            cmd.CommandText = @"SELECT backer_ac_id, be_id, ac_id, be_status, p.p_name 
+                                FROM stjucloo.bestellungen
+                                join stjucloo.pizza p on p.p_id = bestellungen.p_id;";
             Console.WriteLine($"Order::GetAllAsync SQL: {cmd.CommandText}");
             return await ReadAllAsync(await cmd.ExecuteReaderAsync());
         }
@@ -64,10 +72,28 @@ namespace backend
                         backer_ac_id = reader.GetInt32(0),
                         be_id = reader.GetInt32(1),
                         ac_id = reader.GetInt32(2),
-                        p_id = reader.GetInt32(3),
-                        be_backerid = reader.GetInt32(4),
-                        be_pizzaid = reader.GetInt32(5),
-                        be_ready = reader.GetBoolean(6)
+                        p_status = reader.GetString(3),
+                        p_name = reader.GetString(4)
+                    };
+                    orders.Add(order);
+                }
+            }
+            return orders;
+        }
+
+        private async Task<List<Order>> ReadOneAsync(DbDataReader reader)
+        {
+            var orders = new List<Order>();
+            using (reader)
+            {
+                while (await reader.ReadAsync())
+                {
+                    var order = new Order(Db)
+                    {
+                        backer_ac_id = reader.GetInt32(0),
+                        ac_id = reader.GetInt32(1),
+                        p_status = reader.GetString(2),
+                        p_name = reader.GetString(3)
                     };
                     orders.Add(order);
                 }
@@ -101,13 +127,14 @@ namespace backend
         public async Task<int> InsertAsync()
         {
             using var cmd = Db.Connection.CreateCommand();
-            cmd.CommandText = @"INSERT INTO stjucloo.bestellungen (backer_ac_id, ac_id, p_id,be_ready, be_backerid,be_pizzaid) VALUES (@backer_ac_id, @ac_id, @p_id, @be_ready, -1, -1) RETURNING be_id;"; //\todo prüfen
+            cmd.CommandText = @"INSERT INTO stjucloo.bestellungen (backer_ac_id, ac_id, p_id, be_status) VALUES (10 @ac_id, @p_id, 'Order given' );"; //\todo prüfen
             BindParams(cmd);
             Console.WriteLine($"Order::InsertAsync SQL: {cmd.CommandText}");
             //int id_pizza = (int) cmd.LastInsertedId; // \todo Herausfinden, wie man letzte ID bei npgsql bekommt.
             //return id_pizza;
-            var id = cmd.ExecuteScalarAsync().Result;
-            return (int)id;
+            await cmd.ExecuteNonQueryAsync();
+            
+            return 1;
         }
 
         public async Task UpdateAsync()

@@ -1,7 +1,10 @@
 ﻿using frontend.Objects;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,6 +15,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Timers;
+using System.Windows.Threading;
 
 namespace frontend
 {
@@ -21,56 +26,72 @@ namespace frontend
     public partial class IngredientsWindow : Window
     {
         String name;
+        String password;
+
         int runs = 0;
         List<Zutat> zutatenList;
-        public IngredientsWindow(String name)
+        public IngredientsWindow(String name, String password)
         {
             this.name = name;
+            this.password = password;
             InitializeComponent();
+
+            // Create a timer
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromSeconds(5);
+            timer.Tick += myEvent;
+            timer.Start();
+
+
+
+            updateGrid();
+        }
+        // Implement a call with the right signature for events going off
+        private void myEvent(object sender, EventArgs e) { 
             updateGrid();
         }
 
-        private async void updateGrid() {
+
+        private void updateGrid() {
             dataGrid.ItemsSource = null;
-            if(runs == 0)
-            {
-                zutatenList = getZutatenFromApi();
-                runs++;
-            }            
 
-            dataGrid.ItemsSource = zutatenList;
+                //zutatenList = getZutatenFromApi();
+                //zutatenList = 
+                var data = Task.Run(() => getIngredients(name, password));
+                data.Wait();
+
+                if (data.Result.Length > 3) //Result is not []
+                {
+                    //ZutatenJson zutatenJson = JsonConvert.DeserializeObject<ZutatenJson>(data.Result);
+                    zutatenList = JsonConvert.DeserializeObject<List<Zutat>>(data.Result);
+
+                    int test = 0;
+                    dataGrid.ItemsSource = zutatenList;//writes the data to DataGrid
+                }           
+
+            //dataGrid.ItemsSource = zutatenList;
         }
 
-        private List<Zutat> getZutatenFromApi() { 
-            //TODO Create API call to get all the Zutaten 
-                return createMockData();
-            
-            
-        }
-        private List<Zutat> createMockData()
+        private 
+
+        static async Task<string> getIngredients(string u, string p)
         {
-            List<Zutat> zutatList = new List<Zutat>();
-            Zutat zutat = new Zutat();
-            zutat.zutatID = 0;
-            zutat.zutatName = "Salt";
-            zutat.amount = 300;
+            var authData = Encoding.ASCII.GetBytes($"{u}:{p}"); //\todo Backend: BasicAuth für alle User bei Login nötig
+            var response = string.Empty;
 
-            Zutat zutat1 = new Zutat();
-            zutat1.zutatID = 1;
-            zutat1.zutatName = "Pepper";
-            zutat1.amount = 200;
+            var url = $"{EnviromentPizza.baseUrl}ingredient";
 
-            Zutat zutat2 = new Zutat();
-            zutat2.zutatID = 2;
-            zutat2.zutatName = "Dough";
-            zutat2.amount = 20;
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authData));
+            //HttpResponseMessage result = await client.PostAsync(url, postData);
+            HttpResponseMessage result = await client.GetAsync(url);
+            //HttpResponseMessage result = client.PostAsync(url, postData).Result;
 
-            zutatList.Add(zutat);
-            zutatList.Add(zutat1);
-            zutatList.Add(zutat2);
-
-            return zutatList;
+            response = await result.Content.ReadAsStringAsync();
+            return response;
         }
+
+
         private async void button_Click(object sender, RoutedEventArgs e)
         {
             if(textBoxAmount.Text == "")
@@ -82,11 +103,14 @@ namespace frontend
             if(zutat == null) {
                 MessageBox.Show("You need to select an ingredient first");
                 return; }
-            int updatedAmount = zutat.amount + int.Parse(textBoxAmount.Text);
+            int updatedAmount = zutat.zu_amount + int.Parse(textBoxAmount.Text);
 
-            if (updateZutat(zutat, updatedAmount))
+            bool test = await updateZutat(zutat, updatedAmount);
+            
+
+            if (test)
             {
-                labelConfirm.Content = "Succesfully bought " + zutat.zutatName;
+                labelConfirm.Content = "Succesfully bought " + zutat.zu_name;
                 labelConfirm.Visibility = Visibility.Visible;
                 labelConfirm.Background = Brushes.ForestGreen;
 
@@ -98,9 +122,26 @@ namespace frontend
             
         }
 
-        private bool updateZutat(Zutat zutat, int amount) {
+        private async Task<bool> updateZutat(Zutat zutat, int amount) {
             //TODO call to API, update the Zutat
-            mockUpdate(zutat, amount);
+
+            var authData = Encoding.ASCII.GetBytes($"{name}:{password}"); //\todo Backend: BasicAuth für alle User bei Login nötig
+            var response = string.Empty;
+
+            zutat.zu_amount = zutat.zu_amount + amount;
+
+            var json = JsonConvert.SerializeObject(zutat);
+            var postData = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var url = $"{EnviromentPizza.baseUrl}ingredient/"+zutat.zu_id;
+
+
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authData));
+            HttpResponseMessage result = await client.PutAsync(url, postData);
+            //HttpResponseMessage result = client.PostAsync(url, postData).Result;
+
+            response = await result.Content.ReadAsStringAsync();
             return true;
         }
 
@@ -108,9 +149,9 @@ namespace frontend
         {
             foreach (Zutat tmpZutat in zutatenList)
             {
-                if (zutat.zutatID == tmpZutat.zutatID)
+                if (zutat.zu_id == tmpZutat.zu_id)
                 {
-                    tmpZutat.amount = amount;
+                    tmpZutat.zu_amount = amount;
                     updateGrid();
                     return;
                 }
@@ -119,7 +160,7 @@ namespace frontend
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            BackerStartWindow backerStartWindow = new BackerStartWindow(name);
+            BackerStartWindow backerStartWindow = new BackerStartWindow(name, password);
             this.Close();
             backerStartWindow.ShowDialog();
 

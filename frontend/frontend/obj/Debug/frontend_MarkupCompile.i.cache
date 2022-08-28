@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-D:\group_2\frontend\frontend\obj\Debug\
+C:\Users\hasen\source\repos\group_2\frontend\frontend\obj\Debug\
 frontend
 none
 false
 DEBUG;TRACE
-D:\group_2\frontend\frontend\App.xaml
+C:\Users\hasen\source\repos\group_2\frontend\frontend\App.xaml
 6-1238779636
 
-17-742671332
-14-1732140682
+19203958658
+14-2119453924
 BackerOrder.xaml;BackerStartWindow.xaml;CostumerWindow.xaml;CreateAccountWindow.xaml;IngredientsWindow.xaml;MainWindow.xaml;
 
-True
+False
 

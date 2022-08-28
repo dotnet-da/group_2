@@ -26,15 +26,20 @@ namespace frontend
     public partial class MainWindow : Window
     {
         String username;
+        String password;
         public MainWindow()
         {
             InitializeComponent();
+            
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
              
             char user = await checkLoginFromAPI();
+            
+            password = tboxPassword.Password;
+            username = tboxUserName.Text;
 
             switch (user)
             {
@@ -45,19 +50,19 @@ namespace frontend
 
                     await Task.Delay(2000);
 
-                    BackerStartWindow backerStartWindow = new BackerStartWindow(username);
+                    BackerStartWindow backerStartWindow = new BackerStartWindow(username, password);
                     this.Close();
                     backerStartWindow.ShowDialog();
                     //TODO go to Bäcker Window
                     break;
 
-                case 'u':
+                case 'c':
                     sucess.Content = "Login succesful";
                     sucess.Background = System.Windows.Media.Brushes.Green;
                     sucess.Visibility = Visibility.Visible;
 
                     await Task.Delay(2000);
-                    CostumerWindow costumerWindow = new CostumerWindow(username);
+                    CostumerWindow costumerWindow = new CostumerWindow(username, password);
                     this.Close();
                     costumerWindow.ShowDialog();
 
@@ -76,42 +81,15 @@ namespace frontend
                     break;
             }
 
-            if (true) {
-                
-
-
-
-                sucess.Visibility = Visibility.Hidden;
-            } else {
-                
-
-            }
         }
 
-        private char checkLogin() {
-            //TODO actually check the login and get the username + type back. 
-            if (tboxUserName.Text == "backer" && tboxPassword.Password == "backer")
-            {
-                this.username = "Backer";
-                return 'b';
-            }
-            else if (tboxUserName.Text == "user" && tboxPassword.Password == "user")
-            { 
-                this.username = "Costumer";
-                return 'u';
-            }
-            else 
-            {  
-                return 'e';
-            }
-        }
 
         private async Task<char> checkLoginFromAPI()
         {
             var result_from_api = await LoginHttp(tboxUserName.Text, tboxPassword.Password);
             if (result_from_api.Equals("backer"))
                 return 'b';
-            else if (result_from_api.Equals("customer"))
+            else if (result_from_api.Equals("client"))
                 return 'c';
             else if (result_from_api.Equals("admin"))
                 return 'a';
@@ -129,6 +107,8 @@ namespace frontend
             var postData = new StringContent(json, Encoding.UTF8, "application/json");
 
             var url = $"{EnviromentPizza.baseUrl}login";
+            
+            
             var client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authData));
             HttpResponseMessage result = await client.PostAsync(url, postData);

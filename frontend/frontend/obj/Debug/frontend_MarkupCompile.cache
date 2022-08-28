@@ -4,16 +4,16 @@
 winexe
 C#
 .cs
-D:\group_2\frontend\frontend\obj\Debug\
+C:\Users\hasen\source\repos\group_2\frontend\frontend\obj\Debug\
 frontend
 none
 false
 DEBUG;TRACE
-D:\group_2\frontend\frontend\App.xaml
+C:\Users\hasen\source\repos\group_2\frontend\frontend\App.xaml
 6-1238779636
 
-161339417286
-14-1732140682
+18-2008920020
+14-2119453924
 BackerOrder.xaml;BackerStartWindow.xaml;CostumerWindow.xaml;CreateAccountWindow.xaml;IngredientsWindow.xaml;MainWindow.xaml;
 
 False

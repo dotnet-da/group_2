@@ -53,3 +53,6 @@ D:\group_2\frontend\frontend\obj\Debug\frontend.pdb
 D:\group_2\frontend\frontend\bin\Debug\Newtonsoft.Json.dll
 D:\group_2\frontend\frontend\bin\Debug\Newtonsoft.Json.xml
 D:\group_2\frontend\frontend\obj\Debug\frontend.csproj.CopyComplete
+C:\Users\hasen\source\repos\group_2\frontend\frontend\bin\Debug\Newtonsoft.Json.dll
+C:\Users\hasen\source\repos\group_2\frontend\frontend\bin\Debug\Newtonsoft.Json.xml
+C:\Users\hasen\source\repos\group_2\frontend\frontend\obj\Debug\frontend.csproj.CopyComplete

@@ -14,6 +14,6 @@ namespace frontend
         public const string authStringAdmin = "adminaccount:1234";
         public const string authStringBacker = "backeraccount:1234";
         public const string authStringClient = "clientaccount:1234";
-
+    
     }
 }

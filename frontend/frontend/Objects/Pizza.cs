@@ -8,8 +8,8 @@ namespace frontend.Objects
 {
     internal class Pizza
     {
-        public int pizzaID { get; set; }
-        public string pizzaName { get; set; }
+        public int p_id { get; set; }
+        public string p_name { get; set; }
         
     }
 }

@@ -62,10 +62,12 @@
     <Compile Include="BackerOrder.xaml.cs">
       <DependentUpon>BackerOrder.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Objects\AccountsUser.cs" />
     <Compile Include="Objects\Bestellung.cs" />
     <Compile Include="Objects\Pizza.cs" />
     <Compile Include="Objects\Zutat.cs" />
     <Compile Include="TemporaryRedirectHandler.cs" />
+    <Compile Include="ZutatenJson.cs" />
     <Page Include="BackerOrder.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

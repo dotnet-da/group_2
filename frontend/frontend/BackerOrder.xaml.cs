@@ -26,15 +26,17 @@ namespace frontend
     {
         int runs = 0;
         String name;
+        String password;
         List<Bestellung> gridData;
         Bestellung currentBestellungInOven;
         bool pizzaInTheOven = false;
 
         Bestellung currentBestellungSending;
         bool pizzaDriverDriving = false;
-        public BackerOrder(String name)
+        public BackerOrder(String name, String password)
         {
             this.name = name;
+            this.password = password;
             InitializeComponent();
             getOrdersAsync();
         }
@@ -104,7 +106,7 @@ namespace frontend
         }
         private void buttonHome_Click(object sender, RoutedEventArgs e)
         {
-            BackerStartWindow backerStartWindow = new BackerStartWindow(name);
+            BackerStartWindow backerStartWindow = new BackerStartWindow(name, password);
             this.Close();
             backerStartWindow.ShowDialog();
         }

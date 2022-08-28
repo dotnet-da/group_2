@@ -32,7 +32,7 @@ namespace frontend
                 messageLabel.Visibility = Visibility.Hidden;
                 if (createAccount()) 
                 {
-                    CostumerWindow costumerWindow = new CostumerWindow(tboxUserName.Text);
+                    CostumerWindow costumerWindow = new CostumerWindow(tboxUserName.Text, tboxPassword.Password);
                     this.Close();
                     costumerWindow.ShowDialog();
                     
