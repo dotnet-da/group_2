@@ -59,10 +59,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Account.cs" />
+    <Compile Include="BackerBestellelungStatus.cs" />
     <Compile Include="BackerOrder.xaml.cs">
       <DependentUpon>BackerOrder.xaml</DependentUpon>
     </Compile>
     <Compile Include="Objects\AccountsUser.cs" />
+    <Compile Include="Objects\BackerBestellung.cs" />
     <Compile Include="Objects\Bestellung.cs" />
     <Compile Include="Objects\Pizza.cs" />
     <Compile Include="Objects\UserBestellung.cs" />

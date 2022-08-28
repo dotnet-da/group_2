@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
@@ -16,6 +18,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Newtonsoft.Json;
+using System.Windows.Threading;
 
 namespace frontend
 {
@@ -28,10 +32,10 @@ namespace frontend
         String name;
         String password;
         List<Bestellung> gridData;
-        Bestellung currentBestellungInOven;
+        BackerBestellung currentBestellungInOven;
         bool pizzaInTheOven = false;
 
-        Bestellung currentBestellungSending;
+        BackerBestellung currentBestellungSending;
         bool pizzaDriverDriving = false;
         public BackerOrder(String name, String password)
         {
@@ -39,11 +43,22 @@ namespace frontend
             this.password = password;
             InitializeComponent();
             getOrdersAsync();
+
+            // Create a timer
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromSeconds(5);
+            timer.Tick += myEvent;
+            timer.Start();
         }
 
+        // Implement a call with the right signature for events going off
+        private void myEvent(object sender, EventArgs e)
+        {
+            getOrdersAsync();
+        }
         private void buttonConfirm_Click(object sender, RoutedEventArgs e)
         {
-            Bestellung bestellung = (Bestellung) dataGrid.SelectedItem;
+            BackerBestellung bestellung = (BackerBestellung) dataGrid.SelectedItem;
             if (bestellung == null)
             {
                 MessageBox.Show("You need to select an Order first");
@@ -52,33 +67,61 @@ namespace frontend
             updateBestellung(bestellung, "Order accepted");
         }
 
-        private void updateBestellung(Bestellung bestellung, String status) {
+        private async void updateBestellung(BackerBestellung bestellung, String status) {
             //TODO update Bestellung in the API
-            mockUpdate(bestellung, status);
+            var authData = Encoding.ASCII.GetBytes($"{name}:{password}"); //\todo Backend: BasicAuth für alle User bei Login nötig
+            var response = string.Empty;
 
-        }
-        private void mockUpdate(Bestellung bestellung, String status)
-        {
-            foreach(Bestellung bestellung1 in gridData) {
-                if(bestellung.be_id == bestellung1.be_id)
-                {
-                    bestellung1.be_status = status;
-                    getOrdersAsync();
-                    return;
-                }
-            }
+            BackerBestellelungStatus backerBestellelungStatus = new BackerBestellelungStatus();
+            backerBestellelungStatus.be_status = status;  
+
+
+            var json = JsonConvert.SerializeObject(backerBestellelungStatus);
+            var postData = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var url = $"{EnviromentPizza.baseUrl}order/" + bestellung.be_id;
+
+
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authData));
+            HttpResponseMessage result = await client.PutAsync(url, postData);
+            //HttpResponseMessage result = client.PostAsync(url, postData).Result;
+
+            response = await result.Content.ReadAsStringAsync();
         }
 
         //This should get all the Orders from the API where the username matches
-        private async void getOrdersAsync() {
+        private void getOrdersAsync() {
             //Testing
-            if (runs == 0)
+            var data = Task.Run(() => getOrdersFromAPI(name, password));
+            data.Wait();
+
+            if (data.Result.Length > 3) //Result is not []
             {
-                runs++;
+                //ZutatenJson zutatenJson = JsonConvert.DeserializeObject<ZutatenJson>(data.Result);
+                List<BackerBestellung> accountList = JsonConvert.DeserializeObject<List<BackerBestellung>>(data.Result);
+                dataGrid.ItemsSource = null;
+                dataGrid.ItemsSource = accountList;
+                
+
             }
-            
-            dataGrid.ItemsSource = null;
-            dataGrid.ItemsSource = gridData;
+        }
+
+        static async Task<string> getOrdersFromAPI(string u, string p)
+        {
+            var authData = Encoding.ASCII.GetBytes($"{u}:{p}"); //\todo Backend: BasicAuth für alle User bei Login nötig
+            var response = string.Empty;
+
+            var url = $"{EnviromentPizza.baseUrl}order";
+
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authData));
+            //HttpResponseMessage result = await client.PostAsync(url, postData);
+            HttpResponseMessage result = await client.GetAsync(url);
+            //HttpResponseMessage result = client.PostAsync(url, postData).Result;
+
+            response = await result.Content.ReadAsStringAsync();
+            return response;
         }
 
         private void buttonHome_Click(object sender, RoutedEventArgs e)
@@ -95,7 +138,7 @@ namespace frontend
                 MessageBox.Show("There is already a Pizza in the Oven");
                 return;
             }
-            currentBestellungInOven = (Bestellung)dataGrid.SelectedItem;
+            currentBestellungInOven = (BackerBestellung)dataGrid.SelectedItem;
             if(currentBestellungInOven == null)
             {
                 MessageBox.Show("You need to select an Order first");
@@ -163,7 +206,7 @@ namespace frontend
                 MessageBox.Show("The Pizza driver is already driving");
                 return;
             }
-            currentBestellungSending = (Bestellung)dataGrid.SelectedItem;
+            currentBestellungSending = (BackerBestellung)dataGrid.SelectedItem;
             if (currentBestellungSending == null)
             {
                 MessageBox.Show("You need to select an Order first");
