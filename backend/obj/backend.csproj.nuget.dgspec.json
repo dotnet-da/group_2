@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\hasen\\source\\repos\\group_2\\backend\\backend.csproj": {}
+    "D:\\group_2\\backend\\backend.csproj": {}
   },
   "projects": {
-    "C:\\Users\\hasen\\source\\repos\\group_2\\backend\\backend.csproj": {
+    "D:\\group_2\\backend\\backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\hasen\\source\\repos\\group_2\\backend\\backend.csproj",
+        "projectUniqueName": "D:\\group_2\\backend\\backend.csproj",
         "projectName": "backend",
-        "projectPath": "C:\\Users\\hasen\\source\\repos\\group_2\\backend\\backend.csproj",
-        "packagesPath": "C:\\Users\\hasen\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\hasen\\source\\repos\\group_2\\backend\\obj\\",
+        "projectPath": "D:\\group_2\\backend\\backend.csproj",
+        "packagesPath": "C:\\Users\\Julius Cloos\\.nuget\\packages\\",
+        "outputPath": "D:\\group_2\\backend\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\hasen\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Julius Cloos\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -63,8 +63,7 @@
             "net47",
             "net471",
             "net472",
-            "net48",
-            "net481"
+            "net48"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -76,7 +75,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.400\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.302\\RuntimeIdentifierGraph.json"
         }
       }
     }
