@@ -13,7 +13,7 @@ namespace backend
         public int ac_id { get; set; } //Account ID of the one who ordered it
 
         public string p_name { get; set; }
-        public string p_status { get; set; }
+        public string be_status { get; set; }
 
         public int p_id { get; set; }
 
@@ -35,7 +35,7 @@ namespace backend
         public async Task<Order> FindOneAsync(int id_order)
         {
             using var cmd = Db.Connection.CreateCommand();
-            cmd.CommandText = @"SELECT backer_ac_id, ac_id, be_status, p.p_name
+            cmd.CommandText = @"SELECT backer_ac_id, ac_id, be_status, p.p_name, be_id
                                 FROM stjucloo.bestellungen
                                 join stjucloo.pizza p on bestellungen.p_id = p.p_id 
                                 WHERE be_id = @be_id;";
@@ -72,7 +72,7 @@ namespace backend
                         backer_ac_id = reader.GetInt32(0),
                         be_id = reader.GetInt32(1),
                         ac_id = reader.GetInt32(2),
-                        p_status = reader.GetString(3),
+                        be_status = reader.GetString(3),
                         p_name = reader.GetString(4)
                     };
                     orders.Add(order);
@@ -92,8 +92,9 @@ namespace backend
                     {
                         backer_ac_id = reader.GetInt32(0),
                         ac_id = reader.GetInt32(1),
-                        p_status = reader.GetString(2),
-                        p_name = reader.GetString(3)
+                        be_status = reader.GetString(2),
+                        p_name = reader.GetString(3),
+                        be_id = reader.GetInt32(4)
                     };
                     orders.Add(order);
                 }
@@ -127,7 +128,8 @@ namespace backend
         public async Task<int> InsertAsync()
         {
             using var cmd = Db.Connection.CreateCommand();
-            cmd.CommandText = @"INSERT INTO stjucloo.bestellungen (backer_ac_id, ac_id, p_id, be_status) VALUES (10 @ac_id, @p_id, 'Order given' );"; //\todo prüfen
+            be_status = "Order given";
+            cmd.CommandText = @"INSERT INTO stjucloo.bestellungen (backer_ac_id, ac_id, p_id, be_status, be_backerid, be_pizzaid) VALUES (10, @ac_id, @p_id, @be_status, -1, -1 );"; //\todo prüfen
             BindParams(cmd);
             Console.WriteLine($"Order::InsertAsync SQL: {cmd.CommandText}");
             //int id_pizza = (int) cmd.LastInsertedId; // \todo Herausfinden, wie man letzte ID bei npgsql bekommt.
@@ -140,7 +142,7 @@ namespace backend
         public async Task UpdateAsync()
         {
             using var cmd = Db.Connection.CreateCommand();
-            cmd.CommandText = @"UPDATE stjucloo.bestellungen SET backer_ac_id = @backer_ac_id, ac_id=@ac_id, p_id=@p_id, be_ready=@be_ready, be_backerid=-1  WHERE be_id = @be_id;";
+            cmd.CommandText = @"UPDATE stjucloo.bestellungen SET be_status = @be_status WHERE be_id = @be_id;";
             BindParams(cmd);
             BindId(cmd);
             Console.WriteLine($"Order::UpdateAsync SQL: {cmd.CommandText}");
@@ -203,6 +205,13 @@ namespace backend
                 ParameterName = "@be_ready",
                 DbType = DbType.Boolean,
                 Value = be_ready,
+            });
+
+            cmd.Parameters.Add(new NpgsqlParameter
+            {
+                ParameterName = "@be_status",
+                DbType = DbType.String,
+                Value = be_status,
             });
         }
     }

@@ -12,7 +12,9 @@ namespace frontend.Objects
         public int be_id { get; set; }
         public int ac_id { get; set; }
         public int p_id { get; set; }
-        public string status { get; set; }
+        public string be_status { get; set; }
+
+        public string p_name { get; set; }
 
     }
 }

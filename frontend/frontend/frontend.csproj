@@ -65,6 +65,7 @@
     <Compile Include="Objects\AccountsUser.cs" />
     <Compile Include="Objects\Bestellung.cs" />
     <Compile Include="Objects\Pizza.cs" />
+    <Compile Include="Objects\UserBestellung.cs" />
     <Compile Include="Objects\Zutat.cs" />
     <Compile Include="TemporaryRedirectHandler.cs" />
     <Compile Include="ZutatenJson.cs" />

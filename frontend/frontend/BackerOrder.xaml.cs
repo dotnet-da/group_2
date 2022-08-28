@@ -62,7 +62,7 @@ namespace frontend
             foreach(Bestellung bestellung1 in gridData) {
                 if(bestellung.be_id == bestellung1.be_id)
                 {
-                    bestellung1.status = status;
+                    bestellung1.be_status = status;
                     getOrdersAsync();
                     return;
                 }
@@ -75,35 +75,12 @@ namespace frontend
             if (runs == 0)
             {
                 runs++;
-                gridData = mockData();
             }
             
             dataGrid.ItemsSource = null;
             dataGrid.ItemsSource = gridData;
         }
 
-        private List<Bestellung> mockData()
-        {
-            
-            List<Bestellung> bestellungs = new List<Bestellung>();
-
-            Bestellung bestellung = new Bestellung();
-            bestellung.status = "Order given";
-            bestellung.ac_id = 1;
-            bestellung.p_id = 1;
-            bestellung.be_id = 1;
-            bestellungs.Add(bestellung);
-
-            Bestellung bestellung1 = new Bestellung();
-            bestellung1.status = "Order given";
-            bestellung1.ac_id = 2;
-            bestellung1.p_id = 2;
-            bestellung1.be_id = 2;
-            bestellungs.Add(bestellung1);
-
-            return bestellungs;
-
-        }
         private void buttonHome_Click(object sender, RoutedEventArgs e)
         {
             BackerStartWindow backerStartWindow = new BackerStartWindow(name, password);
@@ -124,7 +101,7 @@ namespace frontend
                 MessageBox.Show("You need to select an Order first");
                 return;
             }
-            if(currentBestellungInOven.status == "Order accepted")
+            if(currentBestellungInOven.be_status == "Order accepted")
             {
                 pizzaInTheOven = true;
                 BackgroundWorker worker = new BackgroundWorker();
@@ -192,7 +169,7 @@ namespace frontend
                 MessageBox.Show("You need to select an Order first");
                 return;
             }
-            if (currentBestellungSending.status == "Pizza made")
+            if (currentBestellungSending.be_status == "Pizza made")
             {
                 pizzaDriverDriving = true;
                 BackgroundWorker worker = new BackgroundWorker();
