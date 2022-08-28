@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +15,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Newtonsoft.Json;
+
 
 namespace frontend
 {
@@ -30,7 +34,7 @@ namespace frontend
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
              
-            char user = checkLogin();
+            char user = checkLoginFromAPI();
 
             switch (user)
             {
@@ -57,6 +61,9 @@ namespace frontend
                     this.Close();
                     costumerWindow.ShowDialog();
 
+                    break;
+                case 'a':
+                    MessageBox.Show("Admin Login detected"); //\todo Admin-Modus (vielleicht öffnen von BackerStartWindow UND CostumerWindow?)
                     break;
                 default:
                     sucess.Content = "Login not succesful";
@@ -89,7 +96,7 @@ namespace frontend
                 return 'b';
             }
             else if (tboxUserName.Text == "user" && tboxPassword.Password == "user")
-            {
+            { 
                 this.username = "Costumer";
                 return 'u';
             }
@@ -97,6 +104,38 @@ namespace frontend
             {  
                 return 'e';
             }
+        }
+
+        private char checkLoginFromAPI()
+        {
+            var result_from_api = LoginHttp(tboxUserName.Text, tboxPassword.Password).Result;
+            if (result_from_api.Equals("backer"))
+                return 'b';
+            else if (result_from_api.Equals("customer"))
+                return 'c';
+            else if (result_from_api.Equals("admin"))
+                return 'a';
+            return 'e';
+        }
+
+        static async Task<string> LoginHttp(string u, string p)
+        {
+            var authData = Encoding.ASCII.GetBytes($"{u}:{p}"); //\todo Backend: BasicAuth für alle User bei Login nötig
+            var response = string.Empty;
+
+            Account objectUser = new Account(u, p);
+
+            var json = JsonConvert.SerializeObject(objectUser);
+            var postData = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var url = $"{EnviromentPizza.baseUrl}login";
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authData));
+            //HttpResponseMessage result = await client.PostAsync(url, postData);
+            HttpResponseMessage result = client.PostAsync(url, postData).Result;
+            
+            response = await result.Content.ReadAsStringAsync();
+            return response;
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
