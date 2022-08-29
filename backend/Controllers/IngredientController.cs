@@ -72,6 +72,39 @@ namespace backend.Controllers
             await result.UpdateAsync();
             return new OkObjectResult(result);
         }
+        // PUT api/Book/5
+        [HttpPut("reduceIngredient/")]
+        public async Task<IActionResult> ReduceIngredient([FromBody] IngredientNameValueModel ingredientNameValueModel)
+        {
+            string roleAttemptingAccess = RoleGetter.GetRoleFromClaimsPrincipal(this.User).Result;
+            if (!roleAttemptingAccess.Equals("backer"))
+            {
+                return StatusCode(403);
+            }
+            await Db.Connection.OpenAsync();
+            var query = new Ingredient(Db);
+            var result = await query.GetAllAsync();
+            
+            Ingredient wantedIngredient = null;
+            foreach (Ingredient i in result)
+            {
+                string i_zutat_name = i.zu_name;
+                string wanted_zutat_name = ingredientNameValueModel.zutat_name;
+
+                if (i_zutat_name.Equals(wanted_zutat_name))
+                {
+                    wantedIngredient = i;
+                    break;
+                }
+            }
+            if (wantedIngredient is null)
+                return new NotFoundResult();
+
+            wantedIngredient.zu_amount = (short)(wantedIngredient.zu_amount - ingredientNameValueModel.verringern_um);
+            await wantedIngredient.UpdateAsync();
+            await Db.Connection.CloseAsync();
+            return new OkObjectResult(wantedIngredient);
+        }
 
         // DELETE api/Book/5
         [HttpDelete("{id}")]
