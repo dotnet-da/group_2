@@ -84,11 +84,12 @@ namespace backend
         public async Task<int> InsertAsync()
         {
             using var cmd = Db.Connection.CreateCommand();
-            cmd.CommandText = @"INSERT INTO stjucloo.accounts (ac_username, ac_password, ac_type) VALUES (@ac_username, @ac_password, @ac_type);";
+            cmd.CommandText = @"INSERT INTO stjucloo.accounts (ac_username, ac_password, ac_type) VALUES (@ac_username, @ac_password, @ac_type) RETURNING ac_id;";
             BindParams(cmd);
             Console.WriteLine($"Account::InsertAsync SQL: {cmd.CommandText}");
-            await cmd.ExecuteNonQueryAsync();
-            return 0;
+            var id = cmd.ExecuteScalarAsync().Result;
+            return (int)id;
+           
         }
 
         public async Task UpdateAsync()

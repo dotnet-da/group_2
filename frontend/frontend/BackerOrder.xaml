@@ -1,0 +1,32 @@
+﻿<Window x:Class="frontend.BackerOrder"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:frontend"
+        mc:Ignorable="d"
+        Title="BackerOrder" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="138*"/>
+            <RowDefinition Height="39*"/>
+            <RowDefinition Height="40*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="13*"/>
+            <ColumnDefinition Width="14*"/>
+            <ColumnDefinition Width="13*"/>
+        </Grid.ColumnDefinitions>
+        <DataGrid x:Name="dataGrid" d:ItemsSource="{d:SampleData ItemCount=5}" Grid.ColumnSpan="3"/>
+
+        <Button x:Name="buttonConfirm" Content="Confirm Order" Grid.Row="1" Click="buttonConfirm_Click"/>
+        <Button x:Name="buttonMake" Grid.Column="1" Content="Make Pizza" Grid.Row="1" Click="buttonMake_Click"/>
+        <Button x:Name="buttonSend" Grid.Column="2" Content="Deliver Pizza" Grid.Row="1" Click="buttonSend_Click"/>
+        <Button x:Name="buttonHome" Content="Home" Grid.Row="2" Click="buttonHome_Click"/>
+
+
+        <ProgressBar Name="progressMake" HorizontalAlignment="Center" Height="19" Grid.Row="2" VerticalAlignment="Center" Width="216" Grid.Column="1" Minimum="0" Maximum="100"/>
+        <ProgressBar Name="progressSend" HorizontalAlignment="Center" Height="19" Grid.Row="2" VerticalAlignment="Center" Width="216" Grid.Column="2" Minimum="0" Maximum="100"/>
+
+    </Grid>
+</Window>

@@ -46,9 +46,9 @@ namespace backend.Controllers
             }
             await Db.Connection.OpenAsync();
             body.Db = Db;
-            int result = await body.InsertAsync();
-            Console.WriteLine("inserted id=" + result);
-            return new OkObjectResult(result);
+            await body.InsertAsync();
+            //Console.WriteLine("inserted id=" + result);
+            return new OkObjectResult(1);
         }
 
         // PUT api/Book/5
@@ -64,6 +64,7 @@ namespace backend.Controllers
             result.be_backerid = body.be_backerid;
             result.p_id = body.p_id;
             result.ac_id = body.ac_id;
+            result.be_status = body.be_status;
 
             await result.UpdateAsync();
             return new OkObjectResult(result);

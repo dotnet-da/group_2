@@ -70,13 +70,13 @@ namespace backend
         public async Task<int> InsertAsync()
         {
             using var cmd = Db.Connection.CreateCommand();
-            cmd.CommandText = @"INSERT INTO stjucloo.zutaten (zu_name, zu_amount) VALUES (@zu_name, @zu_amount);";
+            cmd.CommandText = @"INSERT INTO stjucloo.zutaten (zu_name, zu_amount) VALUES (@zu_name, @zu_amount) RETURNING zu_id;";
             BindParams(cmd);
-            await cmd.ExecuteNonQueryAsync();
             Console.WriteLine($"Ingredient::InsertAsync SQL: {cmd.CommandText}");
             //int id_pizza = (int) cmd.LastInsertedId; // \todo Herausfinden, wie man letzte ID bei npgsql bekommt.
             //return id_pizza;
-            return 0;
+            var id = cmd.ExecuteScalarAsync().Result;
+            return (int)id;
         }
 
         public async Task UpdateAsync()
