@@ -20,6 +20,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Newtonsoft.Json;
 using System.Windows.Threading;
+using System.Collections;
 
 namespace frontend
 {
@@ -65,6 +66,7 @@ namespace frontend
                 return;
             }
             updateBestellung(bestellung, "Order accepted");
+            getOrdersAsync();
         }
 
         private async void updateBestellung(BackerBestellung bestellung, String status) {
@@ -100,8 +102,17 @@ namespace frontend
             {
                 //ZutatenJson zutatenJson = JsonConvert.DeserializeObject<ZutatenJson>(data.Result);
                 List<BackerBestellung> accountList = JsonConvert.DeserializeObject<List<BackerBestellung>>(data.Result);
+                List<BackerBestellung> pizzasThatAreNotYetMade = new List<BackerBestellung>();
+                foreach (BackerBestellung backerBestellung in accountList) {
+                    if (backerBestellung.be_status != "Pizza delivered")
+                    {
+                        pizzasThatAreNotYetMade.Add(backerBestellung);
+                    }
+                    
+                 
+                }
                 dataGrid.ItemsSource = null;
-                dataGrid.ItemsSource = accountList;
+                dataGrid.ItemsSource = pizzasThatAreNotYetMade;
                 
 
             }
@@ -157,9 +168,7 @@ namespace frontend
             else {
                 MessageBox.Show("You musst first Accept the Order");
                 currentBestellungInOven = null;
-            }
-
-                          
+            }                         
          
         }    
 
@@ -188,8 +197,77 @@ namespace frontend
         private void pizzaMade(object sender, RunWorkerCompletedEventArgs e)
         {
             updateBestellung(currentBestellungInOven, "Pizza made");
+            reduceZutaten(currentBestellungInOven);
+
             currentBestellungInOven = null;
             pizzaInTheOven = false;
+            getOrdersAsync();
+        }
+
+        private void reduceZutaten(BackerBestellung bestellung) {
+
+            ReduceZutat reduceZutat = new ReduceZutat();
+            if (bestellung.p_name == "Salami")
+            {
+                reduceZutat.zutat_name = "Salami";
+                reduceZutat.verringern_um = 5;
+            }
+            else if (bestellung.p_name == "Ham")
+            {
+                reduceZutat.zutat_name = "Ham";
+                reduceZutat.verringern_um = 5;
+            }
+            else if (bestellung.p_name == "Margherita")
+            {
+                reduceZutat.zutat_name = "Tomato Sauce";
+                reduceZutat.verringern_um = 5;
+            }
+            else if (bestellung.p_name == "Hawaii")
+            {
+                reduceZutat.zutat_name = "Pineapple";
+                reduceZutat.verringern_um = 5;
+            }
+            else if (bestellung.p_name == "Tuna")
+            {
+                reduceZutat.zutat_name = "Tuna";
+                reduceZutat.verringern_um = 5;
+            }
+            else if (bestellung.p_name == "Italio")
+            {
+                reduceZutat.zutat_name = "Dough";
+                reduceZutat.verringern_um = 5;
+            }
+            else if (bestellung.p_name == "Italio")
+            {
+                reduceZutat.zutat_name = "Dough";
+                reduceZutat.verringern_um = 5;
+            }
+
+            if (reduceZutat.zutat_name != null)
+            {
+                reduceZutatenAPI(reduceZutat);
+            }
+
+        }
+
+        private async void reduceZutatenAPI(ReduceZutat reduceZutat)
+        {
+            //TODO update Bestellung in the API
+            var authData = Encoding.ASCII.GetBytes($"{name}:{password}"); //\todo Backend: BasicAuth für alle User bei Login nötig
+            var response = string.Empty;
+
+
+            var json = JsonConvert.SerializeObject(reduceZutat);
+            var postData = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var url = $"{EnviromentPizza.baseUrl}ingredient/reduceIngredient";
+
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authData));
+            HttpResponseMessage result = await client.PutAsync(url, postData);
+            //HttpResponseMessage result = client.PostAsync(url, postData).Result;
+
+            response = await result.Content.ReadAsStringAsync();
         }
 
         private void pizzaDelivered(object sender, RunWorkerCompletedEventArgs e)
@@ -197,6 +275,7 @@ namespace frontend
             updateBestellung(currentBestellungSending, "Pizza delivered");
             currentBestellungSending = null;
             pizzaDriverDriving = false;
+            getOrdersAsync();
         }
 
         private void buttonSend_Click(object sender, RoutedEventArgs e)

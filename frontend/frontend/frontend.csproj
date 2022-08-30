@@ -39,6 +39,11 @@
       <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Collections.NonGeneric, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.NonGeneric.4.3.0\lib\net46\System.Collections.NonGeneric.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -66,7 +71,9 @@
     <Compile Include="Objects\AccountsUser.cs" />
     <Compile Include="Objects\BackerBestellung.cs" />
     <Compile Include="Objects\Bestellung.cs" />
+    <Compile Include="Objects\FreshUser.cs" />
     <Compile Include="Objects\Pizza.cs" />
+    <Compile Include="Objects\ReduceZutat.cs" />
     <Compile Include="Objects\UserBestellung.cs" />
     <Compile Include="Objects\Zutat.cs" />
     <Compile Include="TemporaryRedirectHandler.cs" />

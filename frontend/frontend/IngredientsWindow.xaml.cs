@@ -103,7 +103,7 @@ namespace frontend
             if(zutat == null) {
                 MessageBox.Show("You need to select an ingredient first");
                 return; }
-            int updatedAmount = zutat.zu_amount + int.Parse(textBoxAmount.Text);
+            int updatedAmount =  int.Parse(textBoxAmount.Text);
 
             bool test = await updateZutat(zutat, updatedAmount);
             
