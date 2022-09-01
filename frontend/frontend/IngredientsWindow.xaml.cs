@@ -1,4 +1,4 @@
-﻿using frontend.Objects;
+using frontend.Objects;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -53,22 +53,38 @@ namespace frontend
 
 
         private void updateGrid() {
+            
+            Zutat record = (Zutat)dataGrid.SelectedItem;
+            var selectedItemIndex = dataGrid.SelectedIndex;
             dataGrid.ItemsSource = null;
+            //zutatenList = getZutatenFromApi();
+            //zutatenList = 
+            var data = Task.Run(() => getIngredients(name, password));
+            data.Wait();
 
-                //zutatenList = getZutatenFromApi();
-                //zutatenList = 
-                var data = Task.Run(() => getIngredients(name, password));
-                data.Wait();
+            if (data.Result.Length > 3) //Result is not []
+            {
+                //ZutatenJson zutatenJson = JsonConvert.DeserializeObject<ZutatenJson>(data.Result);
+                zutatenList = JsonConvert.DeserializeObject<List<Zutat>>(data.Result);
 
-                if (data.Result.Length > 3) //Result is not []
+                int test = 0;
+                dataGrid.ItemsSource = zutatenList;//writes the data to DataGrid
+            }
+            if (record != null)
+            {
+                int indexToBeSelected = -1;
+
+                for (int i = 0; i < dataGrid.Items.Count; i++)
                 {
-                    //ZutatenJson zutatenJson = JsonConvert.DeserializeObject<ZutatenJson>(data.Result);
-                    zutatenList = JsonConvert.DeserializeObject<List<Zutat>>(data.Result);
-
-                    int test = 0;
-                    dataGrid.ItemsSource = zutatenList;//writes the data to DataGrid
-                }           
-
+                    Zutat compareTo = (Zutat)dataGrid.Items[i];
+                    if (((Zutat)dataGrid.Items[i]).zu_id == record.zu_id)
+                    {
+                        indexToBeSelected = i;
+                        break;
+                    }
+                }
+                dataGrid.SelectedIndex = indexToBeSelected;
+            }
             //dataGrid.ItemsSource = zutatenList;
         }
 
@@ -128,7 +144,7 @@ namespace frontend
             var authData = Encoding.ASCII.GetBytes($"{name}:{password}"); //\todo Backend: BasicAuth für alle User bei Login nötig
             var response = string.Empty;
 
-            zutat.zu_amount = zutat.zu_amount + amount;
+            zutat.zu_amount = amount;
 
             var json = JsonConvert.SerializeObject(zutat);
             var postData = new StringContent(json, Encoding.UTF8, "application/json");
