@@ -1,4 +1,4 @@
-﻿using frontend.Objects;
+using frontend.Objects;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -93,6 +93,7 @@ namespace frontend
         //This should get all the Orders from the API where the username matches
         private void getOrdersAsync() {
             //Testing
+            BackerBestellung record = (BackerBestellung)dataGrid.SelectedItem;
             var data = Task.Run(() => getOrdersFromAPI(name, password));
             data.Wait();
 
@@ -104,6 +105,21 @@ namespace frontend
                 dataGrid.ItemsSource = accountList;
                 
 
+            }
+            if (record != null)
+            {
+                int indexToBeSelected = -1;
+
+                for (int i = 0; i < dataGrid.Items.Count; i++)
+                {
+                    BackerBestellung compareTo = (BackerBestellung)dataGrid.Items[i];
+                    if (((BackerBestellung)dataGrid.Items[i]).be_id == record.be_id)
+                    {
+                        indexToBeSelected = i;
+                        break;
+                    }
+                }
+                dataGrid.SelectedIndex = indexToBeSelected;
             }
         }
 
