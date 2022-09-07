@@ -15,7 +15,7 @@ If the Pizza-Maker clicks the ingredients button he will get to a Window in whic
 Description of the database (ER-model & dump-file):
 
 # ER Model
-![alt text](https://github.com/dotnet-da/group_2/edit/main/DB_ER_Model.png?raw=true)
+!(https://github.com/dotnet-da/group_2/edit/main/DB_ER_Model.png?raw=true)
 
 # Dump File: 
 ### With this Dump File you should be able to recreate the Database Structure
