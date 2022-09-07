@@ -16,6 +16,8 @@ Description of the database (ER-model & dump-file):
  
 
 # Dump File: 
+### With this Dump File you should be able to recreate the Database Structure
+
 create table stjucloo.accounts
 (
     ac_id       integer generated always as identity
