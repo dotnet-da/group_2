@@ -270,9 +270,9 @@ namespace frontend
                     orderStatusLabel.Background = Brushes.YellowGreen;
                     break;
 
-                case "Delivered":
+                case "Pizza delivered":
                     orderStatusLabel.Visibility = Visibility.Visible;
-                    orderStatusLabel.Content = "Delivered";
+                    orderStatusLabel.Content = "Pizza delivered";
                     orderStatusLabel.Background = Brushes.Green;
                     break;
 
