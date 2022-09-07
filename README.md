@@ -13,7 +13,9 @@ Let’s say we choose the Orders, then the Pizza-Maker gets to a window with all
 
 If the Pizza-Maker clicks the ingredients button he will get to a Window in which he can overview all his available ingredient. If an Ingredient get low the Pizza-Maker can purchase a variable amount of this Ingredient on this Screen. 
 Description of the database (ER-model & dump-file):
- 
+
+# ER Model
+![alt text](https://github.com/dotnet-da/group_2/edit/main/DB_ER_Model.png?raw=true)
 
 # Dump File: 
 ### With this Dump File you should be able to recreate the Database Structure
