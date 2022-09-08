@@ -178,3 +178,6 @@ After starting the Backend, you can now start the Frontend. On the Frontend-side
 
 # Instructions: Backend documentation
 The backend is documented using the Postman-configuration. Just import the Postman-configuration, all available requests are found there.
+
+# Instructions: Admin login
+Admin-login is not possible via the frontend. The Admin-account has access rights to everything the API can do.
