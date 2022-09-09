@@ -12,7 +12,10 @@ When the Pizza-Maker logs in he will be greeted by a menu in which he can select
 Let’s say we choose the Orders, then the Pizza-Maker gets to a window with all the currently available Orders displayed for him. From here he can select a Pizza and Confirm an Order, Make the Pizza, or Deliver the Pizza. Confirming the Order takes no Effort or Time, but making a Pizza takes a set amount of time and occupies the Pizza oven. Same with the Delivery Driver. So, the Pizza-Maker can make a Pizza and deliver one at the same time, but he can’t make or deliver 2 Pizzas at the same time. The progress is displayed with a little progress Bar. Making a Pizza subtracts a set amount of Ingredients form the inventory of the Pizza-Maker. 
 
 If the Pizza-Maker clicks the ingredients button he will get to a Window in which he can overview all his available ingredient. If an Ingredient get low the Pizza-Maker can purchase a variable amount of this Ingredient on this Screen. 
-Description of the database (ER-model & dump-file):
+
+
+# Description of the database (ER-model & dump-file):
+For the Database we used the HDA Postgresql Server. 
 
 # ER Model
 ![ER Model](https://github.com/dotnet-da/group_2/edit/main/DB_ER_Model.png?raw=true)
